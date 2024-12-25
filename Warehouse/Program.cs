@@ -1,6 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var warehouseConnectionString = builder.Configuration.GetConnectionString("WarehouseDB");
+builder.Services.AddDbContext<WarehouseDbContext>((options) =>
+{
+    options.UseSqlServer(warehouseConnectionString);
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
