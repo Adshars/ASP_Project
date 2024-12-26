@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Data
 {
@@ -8,5 +9,8 @@ namespace WarehouseAPI.Data
         {
 
         }
+
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }
