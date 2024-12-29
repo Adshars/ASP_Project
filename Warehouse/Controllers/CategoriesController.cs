@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
+using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Controllers
 {
@@ -47,7 +48,7 @@ namespace WarehouseAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<object>>> GetListWithProducts()
         {
-            var category = await (from c in _db.Categories
+            var category = await (from c in _context.Categories
                                   orderby c.Name ascending
                                   select new
                                   {
@@ -124,12 +125,12 @@ namespace WarehouseAPI.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var categoryDB = await _db.Categories.FirstOrDefaultAsync(c => c.Name == newCategory.Name);
+            var categoryDB = await _context.Categories.FirstOrDefaultAsync(c => c.Name == newCategory.Name);
             if (categoryDB != null)
                 return Conflict($"Category with name {newCategory.Name} already exists");
 
-            _db.Categories.Add(newCategory); 
-            await _db.SaveChangesAsync(); 
+            _context.Categories.Add(newCategory); 
+            await _context.SaveChangesAsync(); 
 
             return Ok(newCategory.Id);
         }
@@ -142,12 +143,12 @@ namespace WarehouseAPI.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var productDB = await _db.Products.FirstOrDefaultAsync(p => p.Name == newProduct.Name);
+            var productDB = await _context.Products.FirstOrDefaultAsync(p => p.Name == newProduct.Name);
             if (productDB != null)
                 return Conflict($"Product with name {newProduct.Name} already exists");
 
-            _db.Products.Add(newProduct); 
-            await _db.SaveChangesAsync(); 
+            _context.Products.Add(newProduct); 
+            await _context.SaveChangesAsync(); 
 
             return Ok(newProduct.Id);
         }
