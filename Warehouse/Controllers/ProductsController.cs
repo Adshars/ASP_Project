@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
+using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly WarehouseDbContext _context;
 
-        public CategoriesController(WarehouseDbContext context)
+        public ProductsController(WarehouseDbContext context)
         {
             _context = context;
         }
@@ -25,11 +26,11 @@ namespace WarehouseAPI.Controllers
         // GET: api/Categories
         [ActionName("List")]
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetCategories()
+        public async Task<ActionResult<List<Product>>> GetProducts()
        {
             try
             {
-                return Ok(await _context.Categories.ToListAsync()); //5
+                return Ok(await _context.Products.ToListAsync()); //5
             }
             catch (Exception ex)
             {
@@ -47,56 +48,60 @@ namespace WarehouseAPI.Controllers
 
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
-        public Category? GetByID(int id)
+        public Product? GetByID(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category == null)
-                throw new Exception($"Category with id {id} does not exist!");
+            var product = _context.Products.Find(id);
+            if (product == null)
+                throw new Exception($"Product with id {id} does not exist!");
 
             
             
-            return _context.Categories.SingleOrDefault(c => c.Id == id);
+            return _context.Products.SingleOrDefault(c => c.Id == id);
             
         }
         [ActionName("Add")]
         [HttpPost]
-        public async Task<ActionResult<int>> PostAdd(Category newCategory)
+        public async Task<ActionResult<int>> PostAdd(Product newProduct)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var categoryDB = await _context.Categories.FirstOrDefaultAsync(c => c.Name == newCategory.Name);
-            if (categoryDB != null)
-                return Conflict($"Category with name {newCategory.Name} already exists");
+            var productDB = await _context.Products.FirstOrDefaultAsync(c => c.Name == newProduct.Name);
+            if (productDB != null)
+                return Conflict($"Product with name {newProduct.Name} already exists");
 
-            _context.Categories.Add(newCategory); 
+            _context.Products.Add(newProduct); 
             await _context.SaveChangesAsync(); 
 
-            return Ok(newCategory.Id);
+            return Ok(newProduct.Name);
         }
+
         [ActionName("Delete")]
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category == null)
-                return Conflict($"Category with id {id} does not exist!");
+            var product = _context.Products.Find(id);
+            if (product == null)
+                return Conflict($"Product with id {id} does not exist!");
 
-            _context.Categories.Remove(category); 
+            _context.Products.Remove(product); 
             await _context.SaveChangesAsync(); 
 
-            return Ok();
+            return Ok("Product deleted");
         }
         [ActionName("Update")]
         [HttpPut]
-        public async Task<ActionResult> PutUpdate(Category updatedCategory)
+        public async Task<ActionResult> PutUpdate(Product updatedProduct)
         {
-            var category = await _context.Categories.FindAsync(updatedCategory.Id); 
-            if (category == null)
-                return Conflict($"Category {updatedCategory.Name} does not exist!");
+            var product = await _context.Products.FindAsync(updatedProduct.Id); 
+            if (product == null)
+                return Conflict($"Product {updatedProduct.Name} does not exist!");
 
-            category.Name = updatedCategory.Name;
-            category.Description = updatedCategory.Description; 
+            product.Name = updatedProduct.Name;
+            product.Description = updatedProduct.Description; 
+            product.Price = updatedProduct.Price;
+            product.Status = updatedProduct.Status;
+            product.CategoryId = updatedProduct.CategoryId;
             await _context.SaveChangesAsync(); 
 
             return Ok();
