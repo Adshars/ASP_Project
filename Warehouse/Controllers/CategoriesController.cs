@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
-using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Controllers
 {
@@ -22,103 +23,42 @@ namespace WarehouseAPI.Controllers
         }
 
         // GET: api/Categories
-        // wyświetla wszystkie kategorie
+        [ActionName("List")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
-        {
-            return await _context.Categories.ToListAsync();
+        public async Task<ActionResult<List<Category>>> GetCategories()
+       {
+            try
+            {
+                return Ok(await _context.Categories.ToListAsync()); //5
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
 
-        // GET: api/Categories/5
-        // wyświetla kategorię o podanym id
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public Category? GetByID(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-
+            var category = _context.Categories.Find(id);
             if (category == null)
                 throw new Exception($"Category with id {id} does not exist!");
 
-            return category;
+            
+            
+            return _context.Categories.SingleOrDefault(c => c.Id == id);
+            
         }
-        // GET: api/Categories/ListWithProducts
-        // wyświetla kategorie wraz z produktami
-        [ActionName("ListWithProducts")]
-        [HttpGet]
-        public async Task<ActionResult<List<object>>> GetListWithProducts()
-        {
-            var category = await (from c in _context.Categories
-                                  orderby c.Name ascending
-                                  select new
-                                  {
-                                      c.Id,
-                                      c.Name,
-                                      Products = from p in c.Products
-                                                 orderby p.Name ascending
-                                                 select new
-                                                 {
-                                                     p.Id,
-                                                     p.Name,
-                                                     p.Description,
-                                                     p.Price,
-                                                     p.Status
-                                                 }
-                                  }).ToListAsync();
-
-            return Ok(category);
-        }
-        // GET: api/Categories/ProductByID/...
-        //wyswietla produkt o podanym id z przydzieloną kategorią
-        [ActionName("ProductByID")] 
-        [HttpGet("{id:range(1,250)}")]
-        public async Task<ActionResult<Product>> GetProductByID(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
-                throw new Exception($"Product with id {id} does not exist!");
-
-            return product;
-        }
-        
-        // PUT: api/Categories/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // aktualizuje kategorię o podanym id
-        
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
-        {
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(category).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Categories
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // dodaje nową kategorię
-        [ActionName("AddNewCategory")]
+        [ActionName("Add")]
         [HttpPost]
         public async Task<ActionResult<int>> PostAdd(Category newCategory)
         {
@@ -134,61 +74,6 @@ namespace WarehouseAPI.Controllers
 
             return Ok(newCategory.Id);
         }
-
-        // dodaje nowy produkt do listy produktów
-        [ActionName("AddNewProduct")]
-        [HttpPost]
-        public async Task<ActionResult<int>> PostAdd(Product newProduct)
-        {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var productDB = await _context.Products.FirstOrDefaultAsync(p => p.Name == newProduct.Name);
-            if (productDB != null)
-                return Conflict($"Product with name {newProduct.Name} already exists");
-
-            _context.Products.Add(newProduct); 
-            await _context.SaveChangesAsync(); 
-
-            return Ok(newProduct.Id);
-        }
-
-        // DELETE: api/Categories/5
-        // usuwa kategorię o podanym id
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
-
-        // usuwa produkt o podanym id
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-    }
+     }
 }
+

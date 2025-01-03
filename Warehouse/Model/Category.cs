@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Data
@@ -7,9 +8,16 @@ namespace WarehouseAPI.Data
     public class Category
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string? Name { get; set; }
+
+        
+        [Required]
+        [StringLength(500)]
+        public string? Description { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
