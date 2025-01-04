@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var warehouseConnectionString = builder.Configuration.GetConnectionString("WarehouseDB");
-builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseSqlServer(warehouseConnectionString));
+builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseNpgsql(warehouseConnectionString));
 
 
 builder.Services.AddControllers();
