@@ -22,6 +22,7 @@ namespace WarehouseAPI.Controllers
             _context = context;
         }
 
+
         // GET: api/Categories/List
         [ActionName("List")]
         [HttpGet]
@@ -43,6 +44,7 @@ namespace WarehouseAPI.Controllers
                 return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
 #endif
             }
+
         }
 
         //GET: api/Categories/ByID/
@@ -107,7 +109,7 @@ namespace WarehouseAPI.Controllers
             await _context.SaveChangesAsync(); 
 
             return Ok();
-
         }
      }
 }
+
