@@ -109,5 +109,30 @@ namespace WarehouseAPI.Controllers
             return Ok();
 
         }
-     }
+
+        //api/Categories/ListWitProducts
+        [ActionName("ListWithProducts")]
+        [HttpGet]
+        public async Task<ActionResult<List<object>>> GetListWithProducts()
+        {
+            var countries = await (from c in _context.Categories
+                                   orderby c.Id ascending
+                                   select new
+                                   {
+                                       c.Id,
+                                       c.Name,
+                                       c.Description,
+                                       Products = from h in c.Products
+                                                orderby h.Id ascending
+                                                select new
+                                                {
+                                                    h.Id,
+                                                    h.Name,
+                                                    h.Description,
+                                                }
+                                   }).ToListAsync();
+
+            return Ok(countries);
+        }
+    }
 }
