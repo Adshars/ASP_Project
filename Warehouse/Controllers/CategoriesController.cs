@@ -116,7 +116,7 @@ namespace WarehouseAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<object>>> GetListWithProducts()
         {
-            var countries = await (from c in _context.Categories
+            var categories = await (from c in _context.Categories
                                    orderby c.Id ascending
                                    select new
                                    {
@@ -132,8 +132,7 @@ namespace WarehouseAPI.Controllers
                                                     h.Description,
                                                 }
                                    }).ToListAsync();
-
-            return Ok(countries);
+            return Ok(categories);
         }
     }
 }
