@@ -45,7 +45,7 @@ namespace WarehouseAPI.Controllers
             }
         }
 
-
+        //GET: api/Categories/ByID/
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
         public Category? GetByID(int id)
@@ -59,6 +59,8 @@ namespace WarehouseAPI.Controllers
             return _context.Categories.SingleOrDefault(c => c.Id == id);
             
         }
+
+        //POST: api/Categories/Add
         [ActionName("Add")]
         [HttpPost]
         public async Task<ActionResult<int>> PostAdd(Category newCategory)
@@ -75,6 +77,8 @@ namespace WarehouseAPI.Controllers
 
             return Ok(newCategory.Id);
         }
+
+        //DELETE: api/Categories/Delete
         [ActionName("Delete")]
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
@@ -88,6 +92,8 @@ namespace WarehouseAPI.Controllers
 
             return Ok();
         }
+
+        //PUT: api/Categories/Update
         [ActionName("Update")]
         [HttpPut]
         public async Task<ActionResult> PutUpdate(Category updatedCategory)
