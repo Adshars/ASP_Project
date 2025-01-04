@@ -11,7 +11,7 @@ using WarehouseAPI.Data;
 
 namespace WarehouseAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
@@ -22,14 +22,14 @@ namespace WarehouseAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Categories
+        // GET: api/Categories/List
         [ActionName("List")]
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetCategories()
-       {
+        public async Task<ActionResult<List<Category>>> GetListAsync()
+        {
             try
             {
-                return Ok(await _context.Categories.ToListAsync()); //5
+                return Ok(await _context.Categories.ToListAsync());
             }
             catch (Exception ex)
             {
@@ -44,6 +44,7 @@ namespace WarehouseAPI.Controllers
 #endif
             }
         }
+
 
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]

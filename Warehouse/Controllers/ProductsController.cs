@@ -12,7 +12,7 @@ using WarehouseAPI.Model;
 
 namespace WarehouseAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
