@@ -132,7 +132,6 @@ namespace WarehouseAPI.Controllers
                                                     h.Description,
                                                 }
                                    }).ToListAsync();
-
             return Ok(categories);
         }
     }
