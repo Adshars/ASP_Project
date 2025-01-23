@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Kategorie</h1>
+
+        <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie kategorie</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategories()">Wszystkie kategorie</button>
+        <pre id="categories" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Kategoria po ID</h2>
+        <input type="text" id="getCategoryId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategory()">Pokaż kategorię</button>
+        <pre id="category" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
+        <input type="text" id="addCategoryID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="addCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="addCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="addCategory()">Dodaj kategorię</button>
+        <pre id="newCategory" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Delete Category by ID</h2>
+        <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
+        <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
+    </div>
+
+    <script>
+        function getCategories() {
+            fetch('https://localhost:7093/api/Categories/List', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(categories => {
+                    let categoriesHTML = '<ul>'
+                    categories.forEach(category => categoriesHTML += `<li><strong>${category.id}</strong>: <strong>${category.name}</strong>: ${category.description}</li>`)
+                    categoriesHTML += '</ul>'
+                    document.getElementById('categories').innerHTML = categoriesHTML
+                });
+        }
+
+        function getCategory() {
+            const id = document.getElementById('getCategoryId').value;
+            fetch(`https://localhost:7093/api/Categories/ByID/${id}`, { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(category => {
+                    document.getElementById('category').innerText = JSON.stringify(category, null, 2);
+                });
+        }
+
+        function addCategory() {
+            const id = document.getElementById('addCategoryID').value;
+            const name = document.getElementById('addCategoryName').value;
+            const description = document.getElementById('addCategoryDescription').value;
+            fetch('https://localhost:7093/api/Categories/Add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description })
+            })
+            .then(response => response.json())
+            .then(category => {
+                document.getElementById('newCategory').innerText = JSON.stringify(category, null, 2);
+            })
+            .catch(err => console.log(err));
+        }
+
+        async function deleteCategory() {
+            const id = document.getElementById('deleteCategory').value;
+            try {
+                const response = await fetch(`https://localhost:7093/api/Categories/Delete/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                document.getElementById('deletedCategory').innerText = `Category with ID ${id} deleted.`;
+            } catch (error) {
+                console.error('Error deleting category:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
