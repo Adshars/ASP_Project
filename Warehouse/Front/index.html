@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Kategorie</h1>
+
+        <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie kategorie</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategories()">Wszystkie kategorie</button>
+        <pre id="categories" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Kategoria po ID</h2>
+        <input type="text" id="getCategoryId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategory()">Pokaż kategorię</button>
+        <pre id="category" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Dodaj nową kategorię</h2>
+        <input type="text" id="addCategoryID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="addCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="addCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="addCategory()">Dodaj kategorię</button>
+        <pre id="newCategory" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Zaktualizuj kategorię</h2>
+        <input type="text" id="updateCategoryID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
+        <pre id="updatedCategory" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Usuń kategorię po ID</h2>
+        <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
+        <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
+        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
+    </div>
+
+    <script>
+        function getCategories() {
+            fetch('https://localhost:7093/api/Categories/List', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(categories => {
+                    let categoriesHTML = '<ul>'
+                    categories.forEach(category => categoriesHTML += `<li><strong>${category.id}</strong>: <strong>${category.name}</strong>: ${category.description}</li>`)
+                    categoriesHTML += '</ul>'
+                    document.getElementById('categories').innerHTML = categoriesHTML
+                });
+        }
+
+        function getCategory() {
+            const id = document.getElementById('getCategoryId').value;
+            fetch(`https://localhost:7093/api/Categories/ByID/${id}`, { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(category => {
+                    document.getElementById('category').innerText = JSON.stringify(category, null, 2);
+                });
+        }
+
+        function addCategory() {
+            const id = document.getElementById('addCategoryID').value;
+            const name = document.getElementById('addCategoryName').value;
+            const description = document.getElementById('addCategoryDescription').value;
+            fetch('https://localhost:7093/api/Categories/Add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description })
+            })
+                .then(response => response.json())
+                .then(category => {
+                    document.getElementById('newCategory').innerText = JSON.stringify(category, null, 2);
+                })
+                .catch(err => console.log(err));
+        }
+
+        function updateCategory() {
+            const id = document.getElementById('updateCategoryID').value;
+            const name = document.getElementById('updateCategoryName').value;
+            const description = document.getElementById('updateCategoryDescription').value;
+            fetch('https://localhost:7093/api/Categories/Update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('updatedCategory').innerText = `Category with ID ${id} updated.`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+        function deleteCategory() {
+            const id = document.getElementById('deleteCategoryId').value;
+            fetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+                .catch(err => console.log(err));
+        }
+
+        function getCategoriesWithProducts() {
+            fetch('https://localhost:7093/api/Categories/ListWithProducts', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(categories => {
+                    let categoriesHTML = '<ul>'
+                    categories.forEach(category => {
+                        categoriesHTML += `<li><strong>${category.id}</strong>: <strong>${category.name}</strong>: ${category.description}<ul>`
+                        category.products.forEach(product => {
+                            categoriesHTML += `<li>   ${product.name} - ${product.description}</li>`
+                        });
+                        categoriesHTML += '</ul></li>'
+                    });
+                    categoriesHTML += '</ul>'
+                    document.getElementById('categoriesWithProducts').innerHTML = categoriesHTML
+                });
+        }
+    </script>
+</body>
+</html>
