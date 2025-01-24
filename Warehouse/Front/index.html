@@ -43,7 +43,41 @@
         <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
         <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
+        <h1 class="text-2xl font-bold mb-4">Produkty</h1>
 
+        <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie produkty</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getProducts()">Wszystkie produkty</button>
+        <pre id="products" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Produkt po ID</h2>
+        <input type="text" id="getProductId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="getProduct()">Pokaż produkt</button>
+        <pre id="product" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Dodaj nowy produkt</h2>
+        <input type="text" id="addProductID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="addProductName" placeholder="Nazwa produktu" class="input input-bordered mb-2" />
+        <input type="text" id="addProductDescription" placeholder="Opis produktu" class="input input-bordered mb-2" />
+        <input type="text" id="addProductPrice" placeholder="Cena" class="input input-bordered mb-2" />
+        <input type="text" id="addProductStatus" placeholder="Status" class="input input-bordered mb-2" />
+        <input type="text" id="addProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="addProduct()">Dodaj produkt</button>
+        <pre id="newProduct" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Zaktualizuj produkt</h2>
+        <input type="text" id="updateProductID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductName" placeholder="Nowa nazwa produktu" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductDescription" placeholder="Nowy opis produktu" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductPrice" placeholder="Nowa cena" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductStatus" placeholder="Nowy status" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="updateProduct()">Zaktualizuj produkt</button>
+        <pre id="updatedProduct" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Usuń produkt po ID</h2>
+        <input type="text" id="deleteProductId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="deleteProduct()">Usuń produkt</button>
+        <pre id="deletedProduct" class="bg-gray-100 p-2 rounded"></pre>
     </div>
 
     <script>
@@ -140,6 +174,89 @@
                     categoriesHTML += '</ul>'
                     document.getElementById('categoriesWithProducts').innerHTML = categoriesHTML
                 });
+        }
+
+        function getProducts() {
+            fetch('https://localhost:7093/api/Products/List', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(products => {
+                    let productsHTML = '<ul>'
+                    products.forEach(product => productsHTML += `<li><strong>${product.id}</strong>: <strong>${product.name}</strong>: ${product.description}</li>`)
+                    productsHTML += '</ul>'
+                    document.getElementById('products').innerHTML = productsHTML
+                });
+        }
+
+        function getProduct() {
+            const id = document.getElementById('getProductId').value;
+            fetch(`https://localhost:7093/api/Products/ByID/${id}`, { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById('product').innerText = JSON.stringify(product, null, 2);
+                });
+        }
+
+        function addProduct() {
+            const id = document.getElementById('addProductID').value;
+            const name = document.getElementById('addProductName').value;
+            const description = document.getElementById('addProductDescription').value;
+            const price = document.getElementById('addProductPrice').value;
+            const status = document.getElementById('addProductStatus').value;
+            const categoryId = document.getElementById('addProductCategoryId').value;
+            fetch('https://localhost:7093/api/Products/Add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description, price, status, categoryId })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('newProduct').innerText = `Nowy produkt "${name}" o ID ${id} został dodany`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+        function updateProduct() {
+            const id = document.getElementById('updateProductID').value;
+            const name = document.getElementById('updateProductName').value;
+            const description = document.getElementById('updateProductDescription').value;
+            const price = document.getElementById('updateProductPrice').value;
+            const status = document.getElementById('updateProductStatus').value;
+            const categoryId = document.getElementById('updateProductCategoryId').value;
+            fetch('https://localhost:7093/api/Products/Update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description, price, status, categoryId })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('updatedProduct').innerText = `Produkt o ID ${id} został zaktualizowany`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+        function deleteProduct() {
+            const id = document.getElementById('deleteProductId').value;
+            fetch(`https://localhost:7093/api/Products/Delete?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('deletedProduct').innerText = `Produkt o ID ${id} został usunięty`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err));
         }
     </script>
 </body>
