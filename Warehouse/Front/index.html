@@ -27,6 +27,13 @@
         <button class="btn btn-primary btn-xs mb-4" onclick="addCategory()">Dodaj kategorię</button>
         <pre id="newCategory" class="bg-gray-100 p-2 rounded"></pre>
 
+        <h2 class="text-xl font-semibold mb-2">Zaktualizuj kategorię</h2>
+        <input type="text" id="updateCategoryID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryName" placeholder="Nowa nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryDescription" placeholder="Nowy opis kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-xs mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
+        <pre id="updatedCategory" class="bg-gray-100 p-2 rounded"></pre>
+
         <h2 class="text-xl font-semibold mb-2">Usuń kategorię po ID</h2>
         <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
         <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
@@ -72,24 +79,34 @@
                 .catch(err => console.log(err));
         }
 
+        function updateCategory() {
+            const id = document.getElementById('updateCategoryID').value;
+            const name = document.getElementById('updateCategoryName').value;
+            const description = document.getElementById('updateCategoryDescription').value;
+            fetch('https://localhost:7093/api/Categories/Update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('updatedCategory').innerText = `Category with ID ${id} updated.`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
         function deleteCategory() {
             const id = document.getElementById('deleteCategoryId').value;
-                fetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
-                })
-                    .catch(err => console.log(err));
+            fetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+                .catch(err => console.log(err));
         }
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
