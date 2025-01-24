@@ -29,8 +29,8 @@
 
         <h2 class="text-xl font-semibold mb-2">Zaktualizuj kategorię</h2>
         <input type="text" id="updateCategoryID" placeholder="ID" class="input input-bordered mb-2" />
-        <input type="text" id="updateCategoryName" placeholder="Nowa nazwa kategorii" class="input input-bordered mb-2" />
-        <input type="text" id="updateCategoryDescription" placeholder="Nowy opis kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
         <button class="btn btn-primary btn-xs mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
         <pre id="updatedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
@@ -38,6 +38,10 @@
         <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
         <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
         <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
+        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
     </div>
 
     <script>
@@ -106,6 +110,24 @@
                 body: JSON.stringify({ id })
             })
                 .catch(err => console.log(err));
+        }
+
+        function getCategoriesWithProducts() {
+            fetch('https://localhost:7093/api/Categories/ListWithProducts', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(categories => {
+                    let categoriesHTML = '<ul>'
+                    categories.forEach(category => {
+                        categoriesHTML += `<li><strong>${category.id}</strong>: <strong>${category.name}</strong>: ${category.description}<ul>`
+                        category.products.forEach(product => {
+                            categoriesHTML += `<li>   ${product.name} - ${product.description}</li>`
+                        });
+                        categoriesHTML += '</ul></li>'
+                    });
+                    categoriesHTML += '</ul>'
+                    document.getElementById('categoriesWithProducts').innerHTML = categoriesHTML
+                });
         }
     </script>
 </body>
