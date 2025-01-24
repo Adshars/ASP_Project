@@ -15,6 +15,10 @@
         <button class="btn btn-primary btn-xs mb-4" onclick="getCategories()">Wszystkie kategorie</button>
         <pre id="categories" class="bg-gray-100 p-2 rounded"></pre>
 
+        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
+        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
+        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
+
         <h2 class="text-xl font-semibold mb-2">Kategoria po ID</h2>
         <input type="text" id="getCategoryId" placeholder="ID" class="input input-bordered mb-2" />
         <button class="btn btn-primary btn-xs mb-4" onclick="getCategory()">Pokaż kategorię</button>
@@ -39,9 +43,7 @@
         <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
         <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
-        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
-        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
+
     </div>
 
     <script>
@@ -76,9 +78,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, name, description })
             })
-                .then(response => response.json())
-                .then(category => {
-                    document.getElementById('newCategory').innerText = JSON.stringify(category, null, 2);
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('newCategory').innerText = `Nowa kategoria "${name}" o ID ${id} została dodana`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 })
                 .catch(err => console.log(err));
         }
@@ -94,7 +99,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        document.getElementById('updatedCategory').innerText = `Category with ID ${id} updated.`;
+                        document.getElementById('updatedCategory').innerText = `Kategoria o ID ${id} została zaktualizowana`;
                     } else {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -109,6 +114,13 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('deletedCategory').innerText = `Kategoria o ID ${id} została usunięta`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
                 .catch(err => console.log(err));
         }
 
