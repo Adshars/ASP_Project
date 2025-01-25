@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories Management</title>
+    <title>Warehouse</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -12,40 +12,89 @@
         <h1 class="text-2xl font-bold mb-4">Kategorie</h1>
 
         <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie kategorie</h2>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategories()">Wszystkie kategorie</button>
+        <span id="loading_getCategories" class="loading loading-ring loading-md" style="display: none;"></span>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategories()">Wszystkie kategorie</button>
         <pre id="categories" class="bg-gray-100 p-2 rounded"></pre>
 
-        <h2 class="text-xl font-semibold mb-2">Kategoria po ID</h2>
+        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
+        <span id="loading_getCategoriesWithProducts" class="loading loading-ring loading-md" style="display: none;"></span>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
+        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Szczegóły kategorii</h2>
+        <span id="loading_getCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="getCategoryId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategory()">Pokaż kategorię</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategory()">Pokaż kategorię</button>
         <pre id="category" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Dodaj nową kategorię</h2>
+        <span id="loading_addCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="addCategoryID" placeholder="ID" class="input input-bordered mb-2" />
         <input type="text" id="addCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
         <input type="text" id="addCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="addCategory()">Dodaj kategorię</button>
+        <button class="btn btn-accent btn-sm mb-4" onclick="addCategory()">Dodaj kategorię</button>
         <pre id="newCategory" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Zaktualizuj kategorię</h2>
+        <span id="loading_updateCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="updateCategoryID" placeholder="ID" class="input input-bordered mb-2" />
-        <input type="text" id="updateCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
-        <input type="text" id="updateCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
+        <input type="text" id="updateCategoryName" placeholder="Nowa nazwa kategorii" class="input input-bordered mb-2" />
+        <input type="text" id="updateCategoryDescription" placeholder="Nowy opis kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-warning btn-sm mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
         <pre id="updatedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Usuń kategorię po ID</h2>
+        <span id="loading_deleteCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
+        <button class="btn btn-secondary btn-sm mb-4" onclick="deleteCategory()">Usuń kategorię</button>
         <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
-        <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
-        <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
+        <h1 class="text-2xl font-bold mb-4">Produkty</h1>
+
+        <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie produkty</h2>
+        <span id="loading_getProducts" class="loading loading-ring loading-md" style="display: none;"></span>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getProducts()">Wszystkie produkty</button>
+        <pre id="products" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Szczegóły produktu</h2>
+        <span id="loading_getProduct" class="loading loading-ring loading-md" style="display: none;"></span>
+        <input type="text" id="getProductId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-primary btn-sm mb-4" onclick="getProduct()">Pokaż produkt</button>
+        <pre id="product" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Dodaj nowy produkt</h2>
+        <span id="loading_addProduct" class="loading loading-ring loading-md" style="display: none;"></span>
+        <input type="text" id="addProductID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="addProductName" placeholder="Nazwa produktu" class="input input-bordered mb-2" />
+        <input type="text" id="addProductDescription" placeholder="Opis produktu" class="input input-bordered mb-2" />
+        <input type="text" id="addProductPrice" placeholder="Cena" class="input input-bordered mb-2" />
+        <input type="text" id="addProductStatus" placeholder="Status" class="input input-bordered mb-2" />
+        <input type="text" id="addProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-accent btn-sm mb-4" onclick="addProduct()">Dodaj produkt</button>
+        <pre id="newProduct" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Zaktualizuj produkt</h2>
+        <span id="loading_updateProduct" class="loading loading-ring loading-md" style="display: none;"></span>
+        <input type="text" id="updateProductID" placeholder="ID" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductName" placeholder="Nowa nazwa produktu" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductDescription" placeholder="Nowy opis produktu" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductPrice" placeholder="Nowa cena" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductStatus" placeholder="Nowy status" class="input input-bordered mb-2" />
+        <input type="text" id="updateProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
+        <button class="btn btn-warning btn-sm mb-4" onclick="updateProduct()">Zaktualizuj produkt</button>
+        <pre id="updatedProduct" class="bg-gray-100 p-2 rounded"></pre>
+
+        <h2 class="text-xl font-semibold mb-2">Usuń produkt po ID</h2>
+        <span id="loading_deleteProduct" class="loading loading-ring loading-md" style="display: none;"></span>
+        <input type="text" id="deleteProductId" placeholder="ID" class="input input-bordered mb-2" />
+        <button class="btn btn-secondary btn-sm mb-4" onclick="deleteProduct()">Usuń produkt</button>
+        <pre id="deletedProduct" class="bg-gray-100 p-2 rounded"></pre>
     </div>
 
     <script>
         function getCategories() {
+            const loadingElement = document.getElementById('loading_getCategories');
+            loadingElement.style.display = 'inline-block';
             fetch('https://localhost:7093/api/Categories/List', { method: 'GET' })
                 .catch(err => console.log(err))
                 .then(response => response.json())
@@ -54,39 +103,51 @@
                     categories.forEach(category => categoriesHTML += `<li><strong>${category.id}</strong>: <strong>${category.name}</strong>: ${category.description}</li>`)
                     categoriesHTML += '</ul>'
                     document.getElementById('categories').innerHTML = categoriesHTML
-                });
+                })
+                .finally(() => loadingElement.style.display = 'none');
         }
 
         function getCategory() {
             const id = document.getElementById('getCategoryId').value;
+            const loadingElement = document.getElementById('loading_getCategory');
+            loadingElement.style.display = 'inline-block';
             fetch(`https://localhost:7093/api/Categories/ByID/${id}`, { method: 'GET' })
                 .catch(err => console.log(err))
                 .then(response => response.json())
                 .then(category => {
                     document.getElementById('category').innerText = JSON.stringify(category, null, 2);
-                });
+                })
+                .finally(() => loadingElement.style.display = 'none');
         }
 
         function addCategory() {
             const id = document.getElementById('addCategoryID').value;
             const name = document.getElementById('addCategoryName').value;
             const description = document.getElementById('addCategoryDescription').value;
+            const loadingElement = document.getElementById('loading_addCategory');
+            loadingElement.style.display = 'inline-block';
             fetch('https://localhost:7093/api/Categories/Add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, name, description })
             })
-                .then(response => response.json())
-                .then(category => {
-                    document.getElementById('newCategory').innerText = JSON.stringify(category, null, 2);
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('newCategory').innerText = `Nowa kategoria "${name}" o ID ${id} została dodana`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.log(err))
+                .finally(() => loadingElement.style.display = 'none');
         }
 
         function updateCategory() {
             const id = document.getElementById('updateCategoryID').value;
             const name = document.getElementById('updateCategoryName').value;
             const description = document.getElementById('updateCategoryDescription').value;
+            const loadingElement = document.getElementById('loading_updateCategory');
+            loadingElement.style.display = 'inline-block';
             fetch('https://localhost:7093/api/Categories/Update', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -94,25 +155,38 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        document.getElementById('updatedCategory').innerText = `Category with ID ${id} updated.`;
+                        document.getElementById('updatedCategory').innerText = `Kategoria o ID ${id} została zaktualizowana`;
                     } else {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.log(err))
+                .finally(() => loadingElement.style.display = 'none');
         }
 
         function deleteCategory() {
             const id = document.getElementById('deleteCategoryId').value;
+            const loadingElement = document.getElementById('loading_deleteCategory');
+            loadingElement.style.display = 'inline-block';
             fetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             })
-                .catch(err => console.log(err));
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('deletedCategory').innerText = `Kategoria o ID ${id} została usunięta`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err))
+                .finally(() => loadingElement.style.display = 'none');
         }
 
         function getCategoriesWithProducts() {
+            const loadingElement = document.getElementById('loading_getCategoriesWithProducts');
+            loadingElement.style.display = 'inline-block';
             fetch('https://localhost:7093/api/Categories/ListWithProducts', { method: 'GET' })
                 .catch(err => console.log(err))
                 .then(response => response.json())
@@ -127,7 +201,106 @@
                     });
                     categoriesHTML += '</ul>'
                     document.getElementById('categoriesWithProducts').innerHTML = categoriesHTML
-                });
+                })
+                .finally(() => loadingElement.style.display = 'none');
+        }
+
+        function getProducts() {
+            const loadingElement = document.getElementById('loading_getProducts');
+            loadingElement.style.display = 'inline-block';
+            fetch('https://localhost:7093/api/Products/List', { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(products => {
+                    let productsHTML = '<ul>'
+                    products.forEach(product => productsHTML += `<li><strong>${product.id}</strong>: <strong>${product.name}</strong>: ${product.description}</li>`)
+                    productsHTML += '</ul>'
+                    document.getElementById('products').innerHTML = productsHTML
+                })
+                .finally(() => loadingElement.style.display = 'none'); 
+        }
+
+        function getProduct() {
+            const id = document.getElementById('getProductId').value;
+            const loadingElement = document.getElementById('loading_getProduct');
+            loadingElement.style.display = 'inline-block';
+            fetch(`https://localhost:7093/api/Products/ByID/${id}`, { method: 'GET' })
+                .catch(err => console.log(err))
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById('product').innerText = JSON.stringify(product, null, 2);
+                })
+                .finally(() => loadingElement.style.display = 'none');
+        }
+
+        function addProduct() {
+            const id = document.getElementById('addProductID').value;
+            const name = document.getElementById('addProductName').value;
+            const description = document.getElementById('addProductDescription').value;
+            const price = document.getElementById('addProductPrice').value;
+            const status = document.getElementById('addProductStatus').value;
+            const categoryId = document.getElementById('addProductCategoryId').value;
+            const loadingElement = document.getElementById('loading_addProduct');
+            loadingElement.style.display = 'inline-block';
+            fetch('https://localhost:7093/api/Products/Add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description, price, status, categoryId })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('newProduct').innerText = `Nowy produkt "${name}" o ID ${id} został dodany`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err))
+                .finally(() => loadingElement.style.display = 'none');
+        }
+
+        function updateProduct() {
+            const id = document.getElementById('updateProductID').value;
+            const name = document.getElementById('updateProductName').value;
+            const description = document.getElementById('updateProductDescription').value;
+            const price = document.getElementById('updateProductPrice').value;
+            const status = document.getElementById('updateProductStatus').value;
+            const categoryId = document.getElementById('updateProductCategoryId').value;
+            const loadingElement = document.getElementById('loading_updateProduct');
+            loadingElement.style.display = 'inline-block';
+            fetch('https://localhost:7093/api/Products/Update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, description, price, status, categoryId })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('updatedProduct').innerText = `Produkt o ID ${id} został zaktualizowany`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err))
+                .finally(() => loadingElement.style.display = 'none');
+        }
+
+        function deleteProduct() {
+            const id = document.getElementById('deleteProductId').value;
+            const loadingElement = document.getElementById('loading_deleteProduct');
+            loadingElement.style.display = 'inline-block';
+            fetch(`https://localhost:7093/api/Products/Delete?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('deletedProduct').innerText = `Produkt o ID ${id} został usunięty`;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+                .catch(err => console.log(err))
+                .finally(() =>loadingElement.style.display = 'none');
         }
     </script>
 </body>
