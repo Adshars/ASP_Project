@@ -23,7 +23,7 @@ namespace WarehouseAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Categories/List
+        // GET: api/Products/List
         [ActionName("List")]
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
@@ -45,7 +45,7 @@ namespace WarehouseAPI.Controllers
 #endif
             }
         }
-        //GET: api/Categories/ByID/
+        //GET: api/Products/ByID/
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
         public Product? GetByID(int id)
@@ -59,7 +59,7 @@ namespace WarehouseAPI.Controllers
             return _context.Products.SingleOrDefault(c => c.Id == id);
             
         }
-        //POST: api/Categories/Add
+        //POST: api/Products/Add
         [ActionName("Add")]
         [HttpPost]
         public async Task<ActionResult<int>> PostAdd(Product newProduct)
@@ -77,7 +77,7 @@ namespace WarehouseAPI.Controllers
             return Ok(newProduct.Name);
         }
 
-        //DELETE: api/Categories/Delete
+        //DELETE: api/Products/Delete
         [ActionName("Delete")]
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
@@ -92,7 +92,7 @@ namespace WarehouseAPI.Controllers
             return Ok("Product deleted");
         }
 
-        //PUT: api/Categories/Update
+        //PUT: api/Products/Update
         [ActionName("Update")]
         [HttpPut]
         public async Task<ActionResult> PutUpdate(Product updatedProduct)
