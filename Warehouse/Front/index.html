@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories Management</title>
+    <title>Warehouse</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -13,18 +13,18 @@
 
         <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie kategorie</h2>
         <span id="loading_getCategories" class="loading loading-ring loading-md" style="display: none;"></span>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategories()">Wszystkie kategorie</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategories()">Wszystkie kategorie</button>
         <pre id="categories" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Pokaż kategorie z produktami</h2>
         <span id="loading_getCategoriesWithProducts" class="loading loading-ring loading-md" style="display: none;"></span>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategoriesWithProducts()">Kategorie z produktami</button>
         <pre id="categoriesWithProducts" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Szczegóły kategorii</h2>
         <span id="loading_getCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="getCategoryId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="getCategory()">Pokaż kategorię</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getCategory()">Pokaż kategorię</button>
         <pre id="category" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Dodaj nową kategorię</h2>
@@ -32,7 +32,7 @@
         <input type="text" id="addCategoryID" placeholder="ID" class="input input-bordered mb-2" />
         <input type="text" id="addCategoryName" placeholder="Nazwa kategorii" class="input input-bordered mb-2" />
         <input type="text" id="addCategoryDescription" placeholder="Opis kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="addCategory()">Dodaj kategorię</button>
+        <button class="btn btn-accent btn-sm mb-4" onclick="addCategory()">Dodaj kategorię</button>
         <pre id="newCategory" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Zaktualizuj kategorię</h2>
@@ -40,26 +40,26 @@
         <input type="text" id="updateCategoryID" placeholder="ID" class="input input-bordered mb-2" />
         <input type="text" id="updateCategoryName" placeholder="Nowa nazwa kategorii" class="input input-bordered mb-2" />
         <input type="text" id="updateCategoryDescription" placeholder="Nowy opis kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
+        <button class="btn btn-warning btn-sm mb-4" onclick="updateCategory()">Zaktualizuj kategorię</button>
         <pre id="updatedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Usuń kategorię po ID</h2>
         <span id="loading_deleteCategory" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="deleteCategoryId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="deleteCategory()">Usuń kategorię</button>
+        <button class="btn btn-secondary btn-sm mb-4" onclick="deleteCategory()">Usuń kategorię</button>
         <pre id="deletedCategory" class="bg-gray-100 p-2 rounded"></pre>
 
         <h1 class="text-2xl font-bold mb-4">Produkty</h1>
 
         <h2 class="text-xl font-semibold mb-2">Pokaż wszystkie produkty</h2>
         <span id="loading_getProducts" class="loading loading-ring loading-md" style="display: none;"></span>
-        <button class="btn btn-primary btn-xs mb-4" onclick="getProducts()">Wszystkie produkty</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getProducts()">Wszystkie produkty</button>
         <pre id="products" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Szczegóły produktu</h2>
         <span id="loading_getProduct" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="getProductId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="getProduct()">Pokaż produkt</button>
+        <button class="btn btn-primary btn-sm mb-4" onclick="getProduct()">Pokaż produkt</button>
         <pre id="product" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Dodaj nowy produkt</h2>
@@ -70,7 +70,7 @@
         <input type="text" id="addProductPrice" placeholder="Cena" class="input input-bordered mb-2" />
         <input type="text" id="addProductStatus" placeholder="Status" class="input input-bordered mb-2" />
         <input type="text" id="addProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="addProduct()">Dodaj produkt</button>
+        <button class="btn btn-accent btn-sm mb-4" onclick="addProduct()">Dodaj produkt</button>
         <pre id="newProduct" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Zaktualizuj produkt</h2>
@@ -81,13 +81,13 @@
         <input type="text" id="updateProductPrice" placeholder="Nowa cena" class="input input-bordered mb-2" />
         <input type="text" id="updateProductStatus" placeholder="Nowy status" class="input input-bordered mb-2" />
         <input type="text" id="updateProductCategoryId" placeholder="ID kategorii" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="updateProduct()">Zaktualizuj produkt</button>
+        <button class="btn btn-warning btn-sm mb-4" onclick="updateProduct()">Zaktualizuj produkt</button>
         <pre id="updatedProduct" class="bg-gray-100 p-2 rounded"></pre>
 
         <h2 class="text-xl font-semibold mb-2">Usuń produkt po ID</h2>
         <span id="loading_deleteProduct" class="loading loading-ring loading-md" style="display: none;"></span>
         <input type="text" id="deleteProductId" placeholder="ID" class="input input-bordered mb-2" />
-        <button class="btn btn-primary btn-xs mb-4" onclick="deleteProduct()">Usuń produkt</button>
+        <button class="btn btn-secondary btn-sm mb-4" onclick="deleteProduct()">Usuń produkt</button>
         <pre id="deletedProduct" class="bg-gray-100 p-2 rounded"></pre>
     </div>
 
@@ -217,7 +217,7 @@
                     productsHTML += '</ul>'
                     document.getElementById('products').innerHTML = productsHTML
                 })
-                .finnally(() => loadingElement.style.display = 'none');
+                .finally(() => loadingElement.style.display = 'none'); 
         }
 
         function getProduct() {
@@ -286,7 +286,7 @@
         function deleteProduct() {
             const id = document.getElementById('deleteProductId').value;
             const loadingElement = document.getElementById('loading_deleteProduct');
-            addEventListener.style.display = 'inline-block';
+            loadingElement.style.display = 'inline-block';
             fetch(`https://localhost:7093/api/Products/Delete?id=${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -300,7 +300,7 @@
                     }
                 })
                 .catch(err => console.log(err))
-                .loadingElement.style.display = 'none';
+                .finally(() =>loadingElement.style.display = 'none');
         }
     </script>
 </body>
