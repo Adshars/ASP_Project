@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
 
+
 namespace WarehouseAPI.Controllers
 {
     [Route("api/[controller]/[Action]")]
