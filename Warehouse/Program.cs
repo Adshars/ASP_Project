@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
+using WarehouseAPI.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
+//Automapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
