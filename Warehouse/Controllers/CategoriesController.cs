@@ -49,16 +49,28 @@ namespace WarehouseAPI.Controllers
         //GET: api/Categories/ByID/
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
-        public Category? GetByID(int id)
+        public ActionResult<Category?> GetByID(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category == null)
-                throw new Exception($"Category with id {id} does not exist!");
+            try
+            {
+                var category = _context.Categories.Find(id);
+                if (category == null)
+                    throw new Exception($"Category with id {id} does not exist!");
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
 
-            
-            
-            return _context.Categories.SingleOrDefault(c => c.Id == id);
-            
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+
+            }
         }
 
         //POST: api/Categories/Add
@@ -66,17 +78,32 @@ namespace WarehouseAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> PostAdd(Category newCategory)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var categoryDB = await _context.Categories.FirstOrDefaultAsync(c => c.Name == newCategory.Name);
-            if (categoryDB != null)
-                return Conflict($"Category with name {newCategory.Name} already exists");
+                var categoryDB = await _context.Categories.FirstOrDefaultAsync(c => c.Name == newCategory.Name);
+                if (categoryDB != null)
+                    return Conflict($"Category with name {newCategory.Name} already exists");
 
-            _context.Categories.Add(newCategory); 
-            await _context.SaveChangesAsync(); 
+                _context.Categories.Add(newCategory);
+                await _context.SaveChangesAsync();
 
-            return Ok(newCategory.Id);
+                return Ok(newCategory.Id);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
 
         //DELETE: api/Categories/Delete
@@ -84,14 +111,29 @@ namespace WarehouseAPI.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category == null)
-                return Conflict($"Category with id {id} does not exist!");
+            try
+            {
+                var category = _context.Categories.Find(id);
+                if (category == null)
+                    return Conflict($"Category with id {id} does not exist!");
 
-            _context.Categories.Remove(category); 
-            await _context.SaveChangesAsync(); 
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
 
         //PUT: api/Categories/Update
@@ -99,41 +141,69 @@ namespace WarehouseAPI.Controllers
         [HttpPut]
         public async Task<ActionResult> PutUpdate(Category updatedCategory)
         {
-            var category = await _context.Categories.FindAsync(updatedCategory.Id); 
-            if (category == null)
-                return Conflict($"Category {updatedCategory.Name} does not exist!");
+            try
+            {
+                var category = await _context.Categories.FindAsync(updatedCategory.Id);
+                if (category == null)
+                    return Conflict($"Category {updatedCategory.Name} does not exist!");
 
-            category.Name = updatedCategory.Name;
-            category.Description = updatedCategory.Description; 
-            await _context.SaveChangesAsync(); 
+                category.Name = updatedCategory.Name;
+                category.Description = updatedCategory.Description;
+                await _context.SaveChangesAsync();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
 
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
-
         //api/Categories/ListWitProducts
         [ActionName("ListWithProducts")]
         [HttpGet]
         public async Task<ActionResult<List<object>>> GetListWithProducts()
         {
-            var categories = await (from c in _context.Categories
-                                   orderby c.Id ascending
-                                   select new
-                                   {
-                                       c.Id,
-                                       c.Name,
-                                       c.Description,
-                                       Products = from h in c.Products
-                                                orderby h.Id ascending
-                                                select new
-                                                {
-                                                    h.Id,
-                                                    h.Name,
-                                                    h.Description,
-                                                }
-                                   }).ToListAsync();
+            try
+            {
+                var categories = await (from c in _context.Categories
+                                        orderby c.Id ascending
+                                        select new
+                                        {
+                                            c.Id,
+                                            c.Name,
+                                            c.Description,
+                                            Products = from h in c.Products
+                                                       orderby h.Id ascending
+                                                       select new
+                                                       {
+                                                           h.Id,
+                                                           h.Name,
+                                                           h.Description,
+                                                       }
+                                        }).ToListAsync();
 
-            return Ok(categories);
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+                return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
     }
 }

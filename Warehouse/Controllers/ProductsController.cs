@@ -27,7 +27,7 @@ namespace WarehouseAPI.Controllers
         [ActionName("List")]
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
-       {
+        {
             try
             {
                 return Ok(await _context.Products.ToListAsync()); //5
@@ -48,33 +48,59 @@ namespace WarehouseAPI.Controllers
         //GET: api/Products/ByID/
         [ActionName("ByID")]
         [HttpGet("{id:range(1,250)}")]
-        public Product? GetByID(int id)
+        public ActionResult<Product?> GetByID(int id)
+        //public Product? GetByID(int id)
         {
-            var product = _context.Products.Find(id);
-            if (product == null)
-                throw new Exception($"Product with id {id} does not exist!");
-
-            
-            
-            return _context.Products.SingleOrDefault(c => c.Id == id);
-            
+            try
+            {
+                var product = _context.Products.Find(id);
+                if (product == null)
+                    throw new Exception($"Product with id {id} does not exist!");
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+            return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
+
         //POST: api/Products/Add
         [ActionName("Add")]
         [HttpPost]
         public async Task<ActionResult<int>> PostAdd(Product newProduct)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var productDB = await _context.Products.FirstOrDefaultAsync(c => c.Name == newProduct.Name);
-            if (productDB != null)
-                return Conflict($"Product with name {newProduct.Name} already exists");
+                var productDB = await _context.Products.FirstOrDefaultAsync(c => c.Name == newProduct.Name);
+                if (productDB != null)
+                    return Conflict($"Product with name {newProduct.Name} already exists");
 
-            _context.Products.Add(newProduct); 
-            await _context.SaveChangesAsync(); 
+                _context.Products.Add(newProduct);
+                await _context.SaveChangesAsync();
 
-            return Ok(newProduct.Name);
+                return Ok(newProduct.Name);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+            return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
 
         //DELETE: api/Products/Delete
@@ -82,14 +108,28 @@ namespace WarehouseAPI.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            var product = _context.Products.Find(id);
-            if (product == null)
-                return Conflict($"Product with id {id} does not exist!");
+            try
+            {
+                var product = _context.Products.Find(id);
+                if (product == null)
+                    return Conflict($"Product with id {id} does not exist!");
 
-            _context.Products.Remove(product); 
-            await _context.SaveChangesAsync(); 
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
 
-            return Ok("Product deleted");
+                return Ok("Product deleted");
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+            return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
 
         //PUT: api/Products/Update
@@ -97,19 +137,32 @@ namespace WarehouseAPI.Controllers
         [HttpPut]
         public async Task<ActionResult> PutUpdate(Product updatedProduct)
         {
-            var product = await _context.Products.FindAsync(updatedProduct.Id); 
-            if (product == null)
-                return Conflict($"Product {updatedProduct.Name} does not exist!");
+            try
+            {
+                var product = await _context.Products.FindAsync(updatedProduct.Id);
+                if (product == null)
+                    return Conflict($"Product {updatedProduct.Name} does not exist!");
 
-            product.Name = updatedProduct.Name;
-            product.Description = updatedProduct.Description; 
-            product.Price = updatedProduct.Price;
-            product.Status = updatedProduct.Status;
-            product.CategoryId = updatedProduct.CategoryId;
-            await _context.SaveChangesAsync(); 
+                product.Name = updatedProduct.Name;
+                product.Description = updatedProduct.Description;
+                product.Price = updatedProduct.Price;
+                product.Status = updatedProduct.Status;
+                product.CategoryId = updatedProduct.CategoryId;
+                await _context.SaveChangesAsync();
 
-            return Ok();
-
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var exception = ex;
+                while (exception.InnerException != null)
+                    exception = exception.InnerException;
+                return new ObjectResult(exception.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+#else
+            return new ObjectResult("Database error") { StatusCode = (int)HttpStatusCode.InternalServerError };
+#endif
+            }
         }
-     }
+    }
 }
