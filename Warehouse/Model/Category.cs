@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WarehouseAPI.Model;
@@ -21,4 +21,3 @@ namespace WarehouseAPI.Data
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
-

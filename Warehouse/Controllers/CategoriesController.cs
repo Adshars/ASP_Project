@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
@@ -38,7 +38,8 @@ namespace WarehouseAPI.Controllers
             {
                 var categories = await _context.Categories.ToListAsync();
                 var dto = _mapper.Map<List<CategoryDTO>>(categories);
-                return Ok(await _context.Categories.ToListAsync());
+                return Ok(dto);
+                
             }
             catch (Exception ex)
             {
