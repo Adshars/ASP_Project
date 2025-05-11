@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
+    
     // Automatyczne przekierowanie do Swagger UI
     app.MapGet("/", context =>
     {
