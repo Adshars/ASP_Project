@@ -11,11 +11,13 @@ using WarehouseAPI.Data;
 using WarehouseAPI.DTO;
 using AutoMapper;
 using Warehouse.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 
 
 namespace WarehouseAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[Action]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -32,6 +34,7 @@ namespace WarehouseAPI.Controllers
         // GET: api/Categories/List
         [ActionName("List")]
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<CategoryDTO>>> GetListAsync()
         {
             try
