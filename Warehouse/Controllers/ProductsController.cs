@@ -11,9 +11,12 @@ using WarehouseAPI.Data;
 using WarehouseAPI.Model;
 using AutoMapper;
 using WarehouseAPI.DTO;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace WarehouseAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[Action]")]
     [ApiController]
     public class ProductsController : ControllerBase
