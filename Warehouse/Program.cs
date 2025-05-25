@@ -112,6 +112,9 @@ app.UseHttpsRedirection();
 //CORS
 app.UseCors("AllowAll");
 
+//Logging
+app.UseSerilogRequestLogging();
+
 //Authentication and Authorization
 
 app.UseAuthentication();
