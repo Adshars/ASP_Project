@@ -7,13 +7,14 @@ using WarehouseAPI.Model;
 using WarehouseAPI.Profiles;
 using Serilog;
 
+var builder = WebApplication.CreateBuilder(args);
+
+
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Seq("http://localhost:5341")
+    .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 // Add services to the container.
