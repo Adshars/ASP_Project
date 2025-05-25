@@ -5,9 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
 using WarehouseAPI.Model;
 using WarehouseAPI.Profiles;
+using Serilog;
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341")
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
