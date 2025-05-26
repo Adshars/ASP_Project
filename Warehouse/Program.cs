@@ -5,9 +5,17 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseAPI.Data;
 using WarehouseAPI.Model;
 using WarehouseAPI.Profiles;
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
@@ -103,6 +111,9 @@ app.UseHttpsRedirection();
 
 //CORS
 app.UseCors("AllowAll");
+
+//Logging
+app.UseSerilogRequestLogging();
 
 //Authentication and Authorization
 
