@@ -208,5 +208,46 @@ namespace WarehouseAPI.Controllers
 #endif
             }
         }
+
+        // POST: api/Products/UploadImage/{productId}
+
+        [ActionName("UploadImage")]
+        [HttpPost("UploadImage/{productId}")]
+        public async Task<IActionResult> UploadImage(int productId, IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("Nie przesłano pliku.");
+
+            // Walidacja typu pliku (jpg, png, gif)
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(ext))
+                return BadRequest("Dozwolone formaty: jpg, jpeg, png, gif.");
+
+            // Możesz dodać limit rozmiaru, np. 2 MB
+            if (image.Length > 2 * 1024 * 1024)
+                return BadRequest("Maksymalny rozmiar pliku to 2MB.");
+
+            // Nazwa pliku: product_{id}.jpg
+            var imageName = $"product_{productId}{ext}";
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "product-images", imageName);
+
+            // Zapis pliku
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            // (opcjonalnie) Zapisz ścieżkę do bazy:
+            var product = await _context.Products.FindAsync(productId);
+            if (product != null)
+            {
+                product.ImagePath = $"/product-images/{imageName}";
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new { imageUrl = $"/product-images/{imageName}" });
+        }
+
     }
 }
