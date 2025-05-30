@@ -115,6 +115,10 @@ app.UseCors("AllowAll");
 //Logging
 app.UseSerilogRequestLogging();
 
+//Static files (for serving images, CSS, JS, etc.)
+app.UseStaticFiles();
+
+
 //Authentication and Authorization
 
 app.UseAuthentication();
