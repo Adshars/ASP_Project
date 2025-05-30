@@ -212,7 +212,7 @@ namespace WarehouseAPI.Controllers
         // POST: api/Products/UploadImage/{productId}
 
         [ActionName("UploadImage")]
-        [HttpPost("UploadImage/{productId}")]
+        [HttpPost("{productId}")]
         public async Task<IActionResult> UploadImage(int productId, IFormFile image)
         {
             if (image == null || image.Length == 0)
@@ -252,7 +252,7 @@ namespace WarehouseAPI.Controllers
         // GET: api/Products/GetImage/{productId}
 
         [ActionName("GetImage")]
-        [HttpGet("GetImage/{productId}")]
+        [HttpGet("{productId}")]
         public IActionResult GetImage(int productId)
         {
             var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "product-images");
