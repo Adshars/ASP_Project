@@ -249,5 +249,32 @@ namespace WarehouseAPI.Controllers
             return Ok(new { imageUrl = $"/product-images/{imageName}" });
         }
 
+        // GET: api/Products/GetImage/{productId}
+
+        [ActionName("GetImage")]
+        [HttpGet("GetImage/{productId}")]
+        public IActionResult GetImage(int productId)
+        {
+            var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "product-images");
+            var possibleExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            foreach (var ext in possibleExtensions)
+            {
+                var path = Path.Combine(directory, $"product_{productId}{ext}");
+                if (System.IO.File.Exists(path))
+                {
+                    var contentType = ext switch
+                    {
+                        ".jpg" or ".jpeg" => "image/jpeg",
+                        ".png" => "image/png",
+                        ".gif" => "image/gif",
+                        _ => "application/octet-stream"
+                    };
+                    var bytes = System.IO.File.ReadAllBytes(path);
+                    return File(bytes, contentType);
+                }
+            }
+            return NotFound("Brak zdjęcia dla tego produktu.");
+        }
+
     }
 }
