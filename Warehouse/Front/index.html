@@ -98,6 +98,13 @@
             <button class="btn btn-primary btn-sm mb-4" onclick="getProduct()">Pokaż produkt</button>
             <pre id="product" class="bg-gray-100 p-2 rounded"></pre>
 
+            <img id="productImage" src="" alt="Brak zdjęcia produktu" style="max-width: 300px; margin-top: 12px; border-radius: 8px; display: none;" />
+
+            <h2 class="text-md font-semibold mb-2 mt-4">Załaduj/Zmień zdjęcie produktu</h2>
+            <input type="file" id="productImageInput" accept=".jpg,.jpeg,.png,.gif" class="file-input file-input-bordered" />
+            <button class="btn btn-accent btn-sm" onclick="uploadProductImage()">Wyślij zdjęcie</button>
+            <pre id="productImageUploadMsg" class="bg-gray-100 p-2 rounded"></pre>
+
             <h2 class="text-xl font-semibold mb-2">Dodaj nowy produkt</h2>
             <span id="loading_addProduct" class="loading loading-ring loading-md" style="display: none;"></span>
             <input type="text" id="addProductName" placeholder="Nazwa produktu" class="input input-bordered mb-2" />
@@ -281,6 +288,8 @@
                     .then(response => response.json())
                     .then(product => {
                         document.getElementById('product').innerText = JSON.stringify(product, null, 2);
+                        showProductImage(id);
+
                     })
                     .finally(() => loadingElement.style.display = 'none');
             }
@@ -430,6 +439,63 @@
                     document.getElementById('mainApp').classList.add('hidden');
                     document.getElementById('authChoice').classList.remove('hidden');
           }
+
+          function uploadProductImage() {
+            const input = document.getElementById('productImageInput');
+            const msg = document.getElementById('productImageUploadMsg');
+            msg.innerText = '';
+
+            if (!input.files || input.files.length === 0) {
+                msg.innerText = 'Wybierz plik do wysłania.';
+                return;
+            }
+
+            const file = input.files[0];
+            // Zakładamy, że ID produktu jest aktualnie wyświetlane w polu 'getProductId'
+            const productId = document.getElementById('getProductId').value;
+            if (!productId) {
+             msg.innerText = 'Najpierw wybierz produkt.';
+             return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch(`https://localhost:7093/api/Products/UploadImage/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: formData
+            })
+            .then(res => res.ok ? res.json() : res.text().then(t => {throw t}))
+            .then(data => {
+                msg.innerText = 'Obraz przesłany pomyślnie!';
+                // Opcjonalnie: odśwież zdjęcie po udanym uploadzie
+                showProductImage(productId);
+            })
+            .catch(err => {
+                msg.innerText = 'Błąd podczas wysyłania obrazu: ' + err;
+            });
+        }
+
+        function showProductImage(productId) {
+            const img = document.getElementById('productImage');
+            // Sprawdź czy produktId istnieje
+            if (!productId) {
+                img.style.display = 'none';
+                return;
+            }
+            // Przypisz url obrazka – wypróbuj endpoint /product-images/product_{id}.jpg
+            img.src = `https://localhost:7093/product-images/product_${productId}.jpg?${Date.now()}`; // Dodaj ?... aby wymusić odświeżenie cache
+            img.onerror = function() {
+                img.style.display = 'none'; // Ukryj, jeśli obrazek nie istnieje
+            };
+            img.onload = function() {
+                img.style.display = 'block';
+            };
+        }
+
 
           // Automatyczne logowanie jeśli token istnieje
           window.onload = () => {
