@@ -98,6 +98,13 @@
             <button class="btn btn-primary btn-sm mb-4" onclick="getProduct()">Pokaż produkt</button>
             <pre id="product" class="bg-gray-100 p-2 rounded"></pre>
 
+            <img id="productImage" src="" alt="Brak zdjęcia produktu" style="max-width: 300px; margin-top: 12px; border-radius: 8px; display: none;" />
+
+            <h2 class="text-md font-semibold mb-2 mt-4">Załaduj/Zmień zdjęcie produktu</h2>
+            <input type="file" id="productImageInput" accept=".jpg,.jpeg,.png,.gif" class="file-input file-input-bordered" />
+            <button class="btn btn-accent btn-sm" onclick="uploadProductImage()">Wyślij zdjęcie</button>
+            <pre id="productImageUploadMsg" class="bg-gray-100 p-2 rounded"></pre>
+
             <h2 class="text-xl font-semibold mb-2">Dodaj nowy produkt</h2>
             <span id="loading_addProduct" class="loading loading-ring loading-md" style="display: none;"></span>
             <input type="text" id="addProductName" placeholder="Nazwa produktu" class="input input-bordered mb-2" />
@@ -127,10 +134,28 @@
         </div>
 
         <script>
+            function authorizedFetch(url, options = {}) {
+                // Pobierz token JWT z localStorage
+                const token = localStorage.getItem('token');
+                options.headers = options.headers || {};
+                // Dodaj nagłówek Authorization tylko jeśli token istnieje
+                if (token) {
+                options.headers['Authorization'] = 'Bearer ' + token;
+                }
+            return fetch(url, options)
+                .then(response => {
+                if (response.status === 401) {
+                    alert('Musisz być zalogowany! (token wygasł lub nieprawidłowy)');
+                    logout();
+                    throw new Error('Unauthorized');
+                }
+                return response;
+                });
+            }   
             function getCategories() {
                 const loadingElement = document.getElementById('loading_getCategories');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Categories/List', { method: 'GET' })
+                authorizedFetch('https://localhost:7093/api/Categories/List', { method: 'GET' })
                     .catch(err => console.log(err))
                     .then(response => response.json())
                     .then(categories => {
@@ -146,7 +171,7 @@
                 const id = document.getElementById('getCategoryId').value;
                 const loadingElement = document.getElementById('loading_getCategory');
                 loadingElement.style.display = 'inline-block';
-                fetch(`https://localhost:7093/api/Categories/ByID/${id}`, { method: 'GET' })
+                authorizedFetch(`https://localhost:7093/api/Categories/ByID/${id}`, { method: 'GET' })
                     .catch(err => console.log(err))
                     .then(response => response.json())
                     .then(category => {
@@ -160,7 +185,7 @@
                 const description = document.getElementById('addCategoryDescription').value;
                 const loadingElement = document.getElementById('loading_addCategory');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Categories/Add', {
+                authorizedFetch('https://localhost:7093/api/Categories/Add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, description })
@@ -182,7 +207,7 @@
                 const description = document.getElementById('updateCategoryDescription').value;
                 const loadingElement = document.getElementById('loading_updateCategory');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Categories/Update', {
+                authorizedFetch('https://localhost:7093/api/Categories/Update', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, name, description })
@@ -202,7 +227,7 @@
                 const id = document.getElementById('deleteCategoryId').value;
                 const loadingElement = document.getElementById('loading_deleteCategory');
                 loadingElement.style.display = 'inline-block';
-                fetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
+                authorizedFetch(`https://localhost:7093/api/Categories/Delete?id=${id}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
@@ -221,7 +246,7 @@
             function getCategoriesWithProducts() {
                 const loadingElement = document.getElementById('loading_getCategoriesWithProducts');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Categories/ListWithProducts', { method: 'GET' })
+                authorizedFetch('https://localhost:7093/api/Categories/ListWithProducts', { method: 'GET' })
                     .catch(err => console.log(err))
                     .then(response => response.json())
                     .then(categories => {
@@ -242,7 +267,7 @@
             function getProducts() {
                 const loadingElement = document.getElementById('loading_getProducts');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Products/List', { method: 'GET' })
+                authorizedFetch('https://localhost:7093/api/Products/List', { method: 'GET' })
                     .catch(err => console.log(err))
                     .then(response => response.json())
                     .then(products => {
@@ -258,11 +283,13 @@
                 const id = document.getElementById('getProductId').value;
                 const loadingElement = document.getElementById('loading_getProduct');
                 loadingElement.style.display = 'inline-block';
-                fetch(`https://localhost:7093/api/Products/ByID/${id}`, { method: 'GET' })
+                authorizedFetch(`https://localhost:7093/api/Products/ByID/${id}`, { method: 'GET' })
                     .catch(err => console.log(err))
                     .then(response => response.json())
                     .then(product => {
                         document.getElementById('product').innerText = JSON.stringify(product, null, 2);
+                        showProductImage(id);
+
                     })
                     .finally(() => loadingElement.style.display = 'none');
             }
@@ -275,7 +302,7 @@
                 const categoryId = document.getElementById('addProductCategoryId').value;
                 const loadingElement = document.getElementById('loading_addProduct');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Products/Add', {
+                authorizedFetch('https://localhost:7093/api/Products/Add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, description, price, status, categoryId })
@@ -300,7 +327,7 @@
                 const categoryId = document.getElementById('updateProductCategoryId').value;
                 const loadingElement = document.getElementById('loading_updateProduct');
                 loadingElement.style.display = 'inline-block';
-                fetch('https://localhost:7093/api/Products/Update', {
+                authorizedFetch('https://localhost:7093/api/Products/Update', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, name, description, price, status, categoryId })
@@ -320,7 +347,7 @@
                 const id = document.getElementById('deleteProductId').value;
                 const loadingElement = document.getElementById('loading_deleteProduct');
                 loadingElement.style.display = 'inline-block';
-                fetch(`https://localhost:7093/api/Products/Delete?id=${id}`, {
+                authorizedFetch(`https://localhost:7093/api/Products/Delete?id=${id}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
@@ -412,6 +439,63 @@
                     document.getElementById('mainApp').classList.add('hidden');
                     document.getElementById('authChoice').classList.remove('hidden');
           }
+
+          function uploadProductImage() {
+            const input = document.getElementById('productImageInput');
+            const msg = document.getElementById('productImageUploadMsg');
+            msg.innerText = '';
+
+            if (!input.files || input.files.length === 0) {
+                msg.innerText = 'Wybierz plik do wysłania.';
+                return;
+            }
+
+            const file = input.files[0];
+            // Zakładamy, że ID produktu jest aktualnie wyświetlane w polu 'getProductId'
+            const productId = document.getElementById('getProductId').value;
+            if (!productId) {
+             msg.innerText = 'Najpierw wybierz produkt.';
+             return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch(`https://localhost:7093/api/Products/UploadImage/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: formData
+            })
+            .then(res => res.ok ? res.json() : res.text().then(t => {throw t}))
+            .then(data => {
+                msg.innerText = 'Obraz przesłany pomyślnie!';
+                // Opcjonalnie: odśwież zdjęcie po udanym uploadzie
+                showProductImage(productId);
+            })
+            .catch(err => {
+                msg.innerText = 'Błąd podczas wysyłania obrazu: ' + err;
+            });
+        }
+
+        function showProductImage(productId) {
+            const img = document.getElementById('productImage');
+            // Sprawdź czy produktId istnieje
+            if (!productId) {
+                img.style.display = 'none';
+                return;
+            }
+            // Przypisz url obrazka – wypróbuj endpoint /product-images/product_{id}.jpg
+            img.src = `https://localhost:7093/product-images/product_${productId}.jpg?${Date.now()}`; // Dodaj ?... aby wymusić odświeżenie cache
+            img.onerror = function() {
+                img.style.display = 'none'; // Ukryj, jeśli obrazek nie istnieje
+            };
+            img.onload = function() {
+                img.style.display = 'block';
+            };
+        }
+
 
           // Automatyczne logowanie jeśli token istnieje
           window.onload = () => {
